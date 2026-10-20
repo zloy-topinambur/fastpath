@@ -462,12 +462,12 @@
       </div>
 
       <div style="margin: 14px 0 12px 0;">
-        <a href="https://lava.top" target="_blank" class="btn btn-buy-lava" id="btn-buy-lava">
+        <a href="https://zloy-topinambur.github.io/fastpath/#pricing" target="_blank" class="btn btn-buy-lava" id="btn-buy-lava">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-          Subscribe on Lava.top ($5/mo) ➔
+          Get FastPath Pro on Lemon Squeezy ($5/mo) ➔
         </a>
         <div style="font-size:10px; color:#64748b; text-align:center; margin-top:5px; line-height: 1.3;">
-          Instant key delivery. Accepts Visa, Mastercard, Apple Pay, Mir & Crypto.
+          Instant key delivery. Powered by Lemon Squeezy (Merchant of Record).
         </div>
       </div>
 
@@ -611,20 +611,74 @@
     }
 
     if (btnActivateKey) {
-      btnActivateKey.onclick = () => {
+      btnActivateKey.onclick = async () => {
         const key = (licenseKeyInput ? licenseKeyInput.value : '').trim();
         if (!key) {
           showLicenseFeedback('Please enter a license key', false);
           return;
         }
         btnActivateKey.disabled = true;
-        btnActivateKey.textContent = '...';
-        parent.postMessage({
-          pluginMessage: {
-            type: 'ACTIVATE_LICENSE',
-            key: key
+        btnActivateKey.textContent = 'Verifying...';
+
+        const upper = key.toUpperCase();
+        // 1. Instant check for master developer key or offline key
+        if (upper === 'FPPRO-DEV-MASTER-UNLIMITED' || upper.startsWith('FPPRO-')) {
+          parent.postMessage({
+            pluginMessage: {
+              type: 'ACTIVATE_LICENSE',
+              key: key
+            }
+          }, '*');
+          return;
+        }
+
+        // 2. Online verification with Lemon Squeezy License API
+        try {
+          const bodyParams = new URLSearchParams();
+          bodyParams.append('license_key', key);
+          bodyParams.append('instance_name', 'Figma User');
+
+          const response = await fetch('https://api.lemonsqueezy.com/v1/licenses/activate', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: bodyParams.toString()
+          });
+
+          const data = await response.json();
+          if (data && data.activated) {
+            const lk = data.license_key || {};
+            const meta = data.meta || {};
+            const inst = data.instance || {};
+
+            parent.postMessage({
+              pluginMessage: {
+                type: 'ACTIVATE_LEMON_LICENSE_SUCCESS',
+                key: key,
+                instanceId: inst.id || null,
+                status: lk.status || 'active',
+                expiresAt: lk.expires_at || null,
+                productName: meta.product_name || 'FastPath Pro',
+                customerEmail: meta.customer_email || ''
+              }
+            }, '*');
+          } else {
+            btnActivateKey.disabled = false;
+            btnActivateKey.textContent = 'Activate Key';
+            const errMsg = (data && data.error) ? data.error : 'License key is invalid or has reached its activation limit.';
+            showLicenseFeedback(errMsg, false);
           }
-        }, '*');
+        } catch (fetchErr) {
+          console.warn('Lemon Squeezy API network error, trying offline fallback:', fetchErr);
+          parent.postMessage({
+            pluginMessage: {
+              type: 'ACTIVATE_LICENSE',
+              key: key
+            }
+          }, '*');
+        }
       };
     }
 
@@ -3007,18 +3061,36 @@ function prepareSchemaData(schema) {
           updateLicenseUI(msg);
           if (btnActivateKey) {
             btnActivateKey.disabled = false;
-            btnActivateKey.textContent = 'Активировать';
+            btnActivateKey.textContent = 'Activate Key';
           }
           if (msg.isPro && proModalBackdrop.style.display !== 'none') {
-            showLicenseFeedback('Лицензия FastPath PRO успешно активирована! 🎉', true);
+            showLicenseFeedback('FastPath Pro license activated! 🎉', true);
             setTimeout(closeProModal, 1200);
+          }
+
+          // Silent background validation for Lemon Squeezy subscriptions
+          if (msg.isPro && msg.licenseSource === 'lemonsqueezy' && msg.licenseKey && msg.instanceId) {
+            try {
+              const vParams = new URLSearchParams();
+              vParams.append('license_key', msg.licenseKey);
+              vParams.append('instance_id', msg.instanceId);
+              fetch('https://api.lemonsqueezy.com/v1/licenses/validate', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: vParams.toString()
+              }).then(r => r.json()).then(vData => {
+                if (vData && vData.valid === false) {
+                  parent.postMessage({ pluginMessage: { type: 'LEMON_SUBSCRIPTION_EXPIRED' } }, '*');
+                }
+              }).catch(e => {});
+            } catch(e) {}
           }
         } else if (msg.type === 'LICENSE_ERROR') {
           if (btnActivateKey) {
             btnActivateKey.disabled = false;
-            btnActivateKey.textContent = 'Активировать';
+            btnActivateKey.textContent = 'Activate Key';
           }
-          showLicenseFeedback(msg.message || 'Неверный лицензионный ключ', false);
+          showLicenseFeedback(msg.message || 'Invalid license key', false);
         } else if (msg.type === 'PAYWALL_TRIGGERED') {
           btnExportHtml.disabled = false;
           btnExportZip.disabled = false;

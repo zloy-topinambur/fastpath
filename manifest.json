@@ -12,8 +12,9 @@
   "networkAccess": {
     "allowedDomains": [
       "https://cdnjs.cloudflare.com",
-      "https://cdn.jsdelivr.net"
+      "https://cdn.jsdelivr.net",
+      "https://api.lemonsqueezy.com"
     ],
-    "reasoning": "Load JSZip to package lightweight prototype export archives"
+    "reasoning": "Load JSZip to package prototype archives and verify Lemon Squeezy software licenses"
   }
 }

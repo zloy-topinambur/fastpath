@@ -301,22 +301,29 @@ async function getLicenseState() {
   let licenseKey = null;
   let exportCount = 0;
   let proExpiresAt = 0;
+  let licenseSource = 'offline';
+  let instanceId = null;
+  let customerEmail = '';
   try {
     licenseKey = await figma.clientStorage.getAsync('fastpath_license_key');
     const storedCount = await figma.clientStorage.getAsync('fastpath_export_count');
     exportCount = typeof storedCount === 'number' ? storedCount : (parseInt(storedCount, 10) || 0);
     const storedExpires = await figma.clientStorage.getAsync('fastpath_pro_expires_at');
     proExpiresAt = typeof storedExpires === 'number' ? storedExpires : (parseInt(storedExpires, 10) || 0);
+    licenseSource = (await figma.clientStorage.getAsync('fastpath_license_source')) || 'offline';
+    instanceId = await figma.clientStorage.getAsync('fastpath_instance_id');
+    customerEmail = (await figma.clientStorage.getAsync('fastpath_customer_email')) || '';
   } catch (e) {
     console.error('Storage access error:', e);
   }
 
   const isMaster = (licenseKey === 'FPPRO-DEV-MASTER-UNLIMITED');
-  const hasValidKey = validateLicenseKey(licenseKey);
+  const isLemonKey = (licenseSource === 'lemonsqueezy' && Boolean(licenseKey));
+  const hasValidOfflineKey = validateLicenseKey(licenseKey);
   const now = Date.now();
-  const isSubscriptionActive = isMaster || (hasValidKey && proExpiresAt > now);
+  const isSubscriptionActive = isMaster || (isLemonKey && proExpiresAt > now) || (hasValidOfflineKey && proExpiresAt > now);
   const daysLeft = isMaster ? 9999 : (isSubscriptionActive ? Math.max(1, Math.ceil((proExpiresAt - now) / (1000 * 60 * 60 * 24))) : 0);
-  const isExpired = !isMaster && hasValidKey && (proExpiresAt > 0) && (now >= proExpiresAt);
+  const isExpired = !isMaster && (isLemonKey || hasValidOfflineKey) && (proExpiresAt > 0) && (now >= proExpiresAt);
 
   return {
     isPro: isSubscriptionActive,
@@ -325,6 +332,9 @@ async function getLicenseState() {
     daysLeft: daysLeft,
     proExpiresAt: proExpiresAt,
     licenseKey: isSubscriptionActive ? licenseKey : null,
+    licenseSource: licenseSource,
+    instanceId: instanceId,
+    customerEmail: customerEmail,
     exportCount: exportCount,
     freeLimit: FREE_EXPORT_LIMIT
   };
@@ -340,6 +350,10 @@ async function syncLicenseToUI() {
       isExpired: state.isExpired,
       daysLeft: state.daysLeft,
       proExpiresAt: state.proExpiresAt,
+      licenseKey: state.licenseKey,
+      licenseSource: state.licenseSource,
+      instanceId: state.instanceId,
+      customerEmail: state.customerEmail,
       exportCount: state.exportCount,
       freeLimit: state.freeLimit
     });
@@ -996,8 +1010,37 @@ figma.ui.onmessage = async (msg) => {
           message: 'Invalid license key. Please check your key and try again.'
         });
       }
+    } else if (msg.type === 'ACTIVATE_LEMON_LICENSE_SUCCESS') {
+      const key = (msg.key || '').trim();
+      await figma.clientStorage.setAsync('fastpath_license_key', key);
+      await figma.clientStorage.setAsync('fastpath_license_source', 'lemonsqueezy');
+      if (msg.instanceId) {
+        await figma.clientStorage.setAsync('fastpath_instance_id', msg.instanceId);
+      }
+      if (msg.customerEmail) {
+        await figma.clientStorage.setAsync('fastpath_customer_email', msg.customerEmail);
+      }
+
+      let expiresTimestamp = 0;
+      if (msg.expiresAt) {
+        expiresTimestamp = new Date(msg.expiresAt).getTime();
+      } else {
+        // Active subscription rolling 365 days
+        expiresTimestamp = Date.now() + (365 * 24 * 60 * 60 * 1000);
+      }
+      await figma.clientStorage.setAsync('fastpath_pro_expires_at', expiresTimestamp);
+
+      figma.notify('FastPath Pro activated via Lemon Squeezy! 🎉');
+      await syncLicenseToUI();
+    } else if (msg.type === 'LEMON_SUBSCRIPTION_EXPIRED') {
+      await figma.clientStorage.setAsync('fastpath_pro_expires_at', Date.now() - 1000);
+      figma.notify('Lemon Squeezy subscription expired or canceled.', { error: true });
+      await syncLicenseToUI();
     } else if (msg.type === 'RESET_LICENSE_DEV') {
       await figma.clientStorage.deleteAsync('fastpath_license_key');
+      await figma.clientStorage.deleteAsync('fastpath_license_source');
+      await figma.clientStorage.deleteAsync('fastpath_instance_id');
+      await figma.clientStorage.deleteAsync('fastpath_customer_email');
       await figma.clientStorage.deleteAsync('fastpath_export_count');
       await figma.clientStorage.deleteAsync('fastpath_pro_expires_at');
       figma.notify('License and counters reset (Developer mode)');
