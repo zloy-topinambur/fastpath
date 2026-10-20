@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FastPath — Export Figma Prototypes to Lightning-Fast HTML</title>
+  <meta name="description" content="Turn your Figma prototypes into standalone, lightning-fast, offline HTML files. 60 FPS touch gestures, overlays, WebP compression, and zero dependencies.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --bg-card: #111827;
+      --bg-card-hover: #172033;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(99, 102, 241, 0.5);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      --accent: #06b6d4;
+      --accent-glow: rgba(6, 182, 212, 0.2);
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --success: #10b981;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Background glow decorations */
+    .glow-bg {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 600px;
+      background: radial-gradient(circle, var(--primary-glow) 0%, rgba(11, 15, 25, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 15, 25, 0.85);
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: -0.5px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #fff;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border);
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-lg {
+      padding: 14px 28px;
+      font-size: 16px;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 90px 0 60px;
+      text-align: center;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      color: #a5b4fc;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: 58px;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 36px;
+      line-height: 1.5;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 50px;
+      flex-wrap: wrap;
+    }
+
+    /* Interactive Preview Frame */
+    .preview-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px var(--primary-glow);
+      max-width: 880px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .browser-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #374151;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    .preview-content {
+      background: #000;
+      border-radius: 12px;
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+    }
+
+    .mockup-phone {
+      width: 220px;
+      height: 380px;
+      background: #1e293b;
+      border-radius: 36px;
+      border: 4px solid #334155;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-screen {
+      flex: 1;
+      background: #0f172a;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .mockup-app-bar {
+      height: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    .mockup-banner {
+      height: 110px;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      border-radius: 16px;
+      padding: 12px;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .mockup-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .mockup-card {
+      flex: 1;
+      height: 60px;
+      background: #1e293b;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .mockup-cursor {
+      position: absolute;
+      top: 55%;
+      left: 60%;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(99, 102, 241, 0.4);
+      border: 2px solid #a5b4fc;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.8);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
+    }
+
+    /* Features Grid */
+    .features {
+      padding: 100px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: all 0.2s;
+    }
+
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Comparison Section */
+    .comparison-section {
+      padding: 60px 0 100px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .comparison-table th, 
+    .comparison-table td {
+      padding: 18px 24px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-table th {
+      background: rgba(255, 255, 255, 0.02);
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .comparison-table td {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .check { color: var(--success); font-weight: 700; }
+    .cross { color: #ef4444; }
+
+    /* Pricing Section */
+    .pricing {
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+      background: radial-gradient(circle at 50% 100%, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--primary);
+      box-shadow: 0 0 35px var(--primary-glow);
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: -12px;
+      right: 28px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .plan-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .plan-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .plan-price {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+
+    .price-num {
+      font-size: 48px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .price-period {
+      color: var(--text-dim);
+      font-size: 15px;
+    }
+
+    .plan-features {
+      list-style: none;
+      margin-bottom: 36px;
+      flex: 1;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .plan-features li svg {
+      color: var(--success);
+      flex-shrink: 0;
+    }
+
+    /* FAQ */
+    .faq {
+      padding: 80px 0 100px;
+      border-top: 1px solid var(--border);
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+      gap: 28px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+    }
+
+    .faq-item h4 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .faq-item p {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Legal Modals / Tabs */
+    .legal-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      margin-top: 40px;
+    }
+
+    .legal-content h3 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .legal-content h4 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 24px 0 8px;
+    }
+
+    .legal-content p, .legal-content ul {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    .legal-content ul {
+      padding-left: 20px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 0 30px;
+      background: #080c14;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-col h5 {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .footer-col a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-col a:hover {
+      color: #fff;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 38px; }
+      .hero p { font-size: 17px; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-bg"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-wrapper">
+      <a href="#" class="logo">
+        <div class="logo-badge">⚡</div>
+        <span>FastPath</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#comparison">Compare</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="#terms">Terms</a>
+        <a href="#privacy">Privacy</a>
+      </nav>
+      <div>
+        <a href="#pricing" class="btn btn-primary">Get FastPath Pro</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="pill-badge">
+        <span>🚀 FastPath 2.0 for Figma is here</span>
+      </div>
+      <h1>Turn Figma Prototypes Into<br>Lightning-Fast HTML</h1>
+      <p>
+        Export interactive prototypes with 60 FPS mobile touch gestures, overlay sheets, WebP compression, and zero dependencies. Works 100% offline in any browser.
+      </p>
+      <div class="hero-actions">
+        <a href="#pricing" class="btn btn-primary btn-lg">Upgrade to Pro ($5/mo)</a>
+        <a href="#features" class="btn btn-secondary btn-lg">Explore Features ↓</a>
+      </div>
+
+      <!-- Preview Mockup -->
+      <div class="preview-card">
+        <div class="preview-header">
+          <div class="browser-dots">
+            <div class="dot dot-red"></div>
+            <div class="dot dot-yellow"></div>
+            <div class="dot dot-green"></div>
+          </div>
+          <div>fastpath-preview.html — 100% Offline Single File</div>
+          <div>60 FPS • WebP</div>
+        </div>
+        <div class="preview-content">
+          <div class="mockup-phone">
+            <div class="phone-screen">
+              <div class="mockup-app-bar">
+                <span>9:41</span>
+                <span>5G 100%</span>
+              </div>
+              <div class="mockup-banner">
+                <div>FastPath Mobile</div>
+                <div style="font-size: 10px; font-weight: 400; opacity: 0.8;">Interactive Gesture Engine</div>
+              </div>
+              <div class="mockup-row">
+                <div class="mockup-card"></div>
+                <div class="mockup-card"></div>
+              </div>
+              <div class="mockup-card" style="height: 100px;"></div>
+              <div class="mockup-cursor"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-title">
+        <h2>Engineered for Flawless Prototype Demos</h2>
+        <p>No more slow Figma viewer loading screens or client login walls. Share your vision at the speed of thought.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>60 FPS Touch Physics</h3>
+          <p>Features an ultra-responsive gesture cursor, tap ripples, and motion trails designed to feel just like a native mobile app under thumb interaction.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📦</div>
+          <h3>100% Offline Single-File</h3>
+          <p>Pack your entire prototype into one self-contained HTML file. No backend servers, no cloud databases, no external dependencies required.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🖼️</div>
+          <h3>WebP Retina Compression</h3>
+          <p>Export in crisp 2x / 3x Retina resolution while cutting file sizes by up to 80% with lossy/lossless WebP client-side compression.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📑</div>
+          <h3>Modal & Overlay Automation</h3>
+          <p>Full support for Figma overlays, bottom sheets, alert dialogs, background dimming, and outside-tap dismissals without manual coding.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>PWA & Telegram WebApp Ready</h3>
+          <p>Exported prototypes include manifest data URIs for 1-tap "Add to Home Screen" and native Telegram WebApp auto-expansion support.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Complete Privacy</h3>
+          <p>Your design assets never leave your computer. Processing happens entirely within the local Figma sandbox in your browser.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="comparison-section" id="comparison">
+    <div class="container">
+      <div class="section-title">
+        <h2>Why Designers Choose FastPath</h2>
+        <p>A quick look at how FastPath compares to the standard Figma prototype viewer.</p>
+      </div>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Standard Figma Mirror / Link</th>
+            <th>FastPath Prototype Exporter</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Client Sign-in</strong></td>
+            <td class="cross">Required or prompts login</td>
+            <td class="check">Zero sign-in, instant open</td>
+          </tr>
+          <tr>
+            <td><strong>Offline Capability</strong></td>
+            <td class="cross">Fails without internet</td>
+            <td class="check">100% offline single HTML</td>
+          </tr>
+          <tr>
+            <td><strong>Mobile Gesture Engine</strong></td>
+            <td class="cross">Clunky web pointer</td>
+            <td class="check">60 FPS touch cursor & ripples</td>
+          </tr>
+          <tr>
+            <td><strong>White-label Sharing</strong></td>
+            <td class="cross">Figma branding & UI chrome</td>
+            <td class="check">Pure standalone app feel</td>
+          </tr>
+          <tr>
+            <td><strong>Load Time</strong></td>
+            <td class="cross">5 - 15 seconds (heavy canvas)</td>
+            <td class="check">&lt; 300ms instant render</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="section-title">
+        <h2>Simple, Transparent Pricing</h2>
+        <p>Unlock unlimited exports and professional presentation features with FastPath Pro.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Monthly Plan -->
+        <div class="pricing-card">
+          <div class="plan-name">Pro Monthly</div>
+          <div class="plan-desc">Flexible monthly subscription. Cancel anytime with one click.</div>
+          <div class="plan-price">
+            <span class="price-num">$5</span>
+            <span class="price-period">/ month</span>
+          </div>
+          <ul class="plan-features">
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Unlimited prototype exports
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Full 2x & 3x Retina resolution
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              No watermark on exports
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              ZIP bundle + Single HTML modes
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Commercial client usage
+            </li>
+          </ul>
+          <a href="https://lemonsqueezy.com" class="btn btn-secondary btn-lg" id="btn-buy-monthly">Subscribe for $5/mo</a>
+        </div>
+
+        <!-- Annual Plan -->
+        <div class="pricing-card featured">
+          <div class="featured-badge">Save 35%</div>
+          <div class="plan-name">Pro Annual</div>
+          <div class="plan-desc">Best value for active UI/UX designers and agencies.</div>
+          <div class="plan-price">
+            <span class="price-num">$39</span>
+            <span class="price-period">/ year ($3.25/mo)</span>
+          </div>
+          <ul class="plan-features">
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <strong>All Pro Monthly features included</strong>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              366 days of continuous access
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Priority email support
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              All future 2026 feature updates
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              14-Day Money Back Guarantee
+            </li>
+          </ul>
+          <a href="https://lemonsqueezy.com" class="btn btn-primary btn-lg" id="btn-buy-annual">Get 1 Year Pro ($39)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="section-title">
+        <h2>Frequently Asked Questions</h2>
+        <p>Everything you need to know about FastPath Pro licensing and functionality.</p>
+      </div>
+
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4>How do I activate my license in Figma?</h4>
+          <p>After checkout, your license key is displayed on the order confirmation screen and sent via email. Open the FastPath plugin in Figma, click <strong>Unlock Pro</strong>, paste your key, and press <strong>Activate</strong>.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>Can I use the exported HTML prototypes offline?</h4>
+          <p>Yes! When you select "Single HTML" export, all screen images, interaction hot spots, and gesture engines are packed directly into one self-contained HTML file that opens in any browser without an internet connection.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>How do subscriptions and renewals work?</h4>
+          <p>Payments are securely processed by Lemon Squeezy (Merchant of Record). Your subscription renews automatically until canceled. You can cancel with 1 click anytime from your Lemon Squeezy customer portal.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>What is the refund policy?</h4>
+          <p>We offer a hassle-free 14-day money-back guarantee. If FastPath does not fit your workflow, email us at <a href="mailto:magey95@gmail.com" style="color:var(--primary);">magey95@gmail.com</a> with your order number for a full refund.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Legal & Terms Sections (Mandatory for Lemon Squeezy Merchant Compliance) -->
+  <section class="container" id="terms" style="padding-bottom: 40px;">
+    <div class="legal-content">
+      <h3>Terms of Service</h3>
+      <p><strong>Effective Date:</strong> January 1, 2026. FastPath Prototype Exporter ("FastPath", "we", "us").</p>
+      
+      <h4>1. License Grant</h4>
+      <p>FastPath grants you a revocable, non-exclusive, non-transferable license to use the FastPath Figma Plugin and generated prototype files for personal and commercial purposes in accordance with your purchased subscription tier.</p>
+
+      <h4>2. Payments and Billing</h4>
+      <p>All payments, invoicing, and tax collection are processed by our Merchant of Record, Lemon Squeezy (Lemon Squeezy LLC). By subscribing, you authorize Lemon Squeezy to charge your selected payment method on a recurring or one-time basis.</p>
+
+      <h4>3. Cancellation & Refunds</h4>
+      <p>You may cancel your monthly or annual subscription at any time via your customer billing portal. We provide a full refund within 14 days of initial purchase upon request.</p>
+
+      <h4>4. Intellectual Property</h4>
+      <p>All design assets, screens, and prototypes exported through FastPath remain the exclusive intellectual property of you and your respective clients. FastPath claims zero ownership over exported content.</p>
+    </div>
+  </section>
+
+  <section class="container" id="privacy" style="padding-bottom: 80px;">
+    <div class="legal-content">
+      <h3>Privacy Policy</h3>
+      <p><strong>Effective Date:</strong> January 1, 2026.</p>
+      
+      <h4>1. Data Collection and Processing</h4>
+      <p>FastPath operates directly within Figma's client environment. We do not transmit your Figma canvas frames, images, prototype reaction nodes, or project contents to any external servers. All prototype assembly and WebP compression occur locally in your browser memory.</p>
+
+      <h4>2. License Key Verification</h4>
+      <p>When you activate FastPath Pro, your cryptographic license key and expiry timestamp are validated locally and stored in your browser's private <code>figma.clientStorage</code>. No personal telemetry or usage tracking is collected.</p>
+
+      <h4>3. Payment Data</h4>
+      <p>We do not store, handle, or collect credit card numbers or financial account information. All transaction data is processed securely by Lemon Squeezy under PCI-DSS Level 1 compliance.</p>
+
+      <h4>4. Contact</h4>
+      <p>For questions or privacy inquiries, contact: <a href="mailto:magey95@gmail.com" style="color:var(--primary);">magey95@gmail.com</a>.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col" style="max-width: 320px;">
+          <div class="logo">
+            <div class="logo-badge">⚡</div>
+            <span>FastPath</span>
+          </div>
+          <p style="margin-top: 12px; color: var(--text-dim);">
+            The premier offline prototype exporter for Figma. Built for designers, product teams, and mobile developers worldwide.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>Product</h5>
+          <a href="#features">Features</a>
+          <a href="#comparison">Compare</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal & Compliance</h5>
+          <a href="#terms">Terms of Service</a>
+          <a href="#privacy">Privacy Policy</a>
+          <a href="#faq">Refund Policy</a>
+        </div>
+
+        <div class="footer-col">
+          <h5>Support & Contact</h5>
+          <a href="mailto:magey95@gmail.com">magey95@gmail.com</a>
+          <span style="color: var(--text-dim); font-size: 13px;">Merchant partner: Lemon Squeezy</span>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 FastPath Prototype Exporter. All rights reserved.</div>
+        <div>Payments powered securely by Lemon Squeezy (Merchant of Record).</div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "FastPath Prototype Exporter",
+  "id": "fastpath-prototype-exporter",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "https://cdnjs.cloudflare.com",
+      "https://cdn.jsdelivr.net"
+    ],
+    "reasoning": "Load JSZip to package lightweight prototype export archives"
+  }
+}
