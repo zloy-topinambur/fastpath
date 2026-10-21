@@ -1,0 +1,248 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1920" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0b0f19" />
+      <stop offset="60%" stop-color="#070a12" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+
+    <!-- Ambient Glow Left -->
+    <radialGradient id="glowLeft" cx="25%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Ambient Glow Right -->
+    <radialGradient id="glowRight" cx="75%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.20" />
+      <stop offset="70%" stop-color="#6366f1" stop-opacity="0.10" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Primary Accent Gradient -->
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="600" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+
+    <!-- Card Background -->
+    <linearGradient id="cardBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.85" />
+    </linearGradient>
+
+    <!-- Card Border -->
+    <linearGradient id="cardBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.03" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="blurFilter" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="30" />
+    </filter>
+  </defs>
+
+  <style>
+    .title-font { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; font-weight: 800; }
+    .body-font { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; font-weight: 500; }
+    .mono-font { font-family: 'JetBrains Mono', monospace; }
+  </style>
+
+  <!-- 1. Deep Space Background -->
+  <rect width="1920" height="1080" fill="url(#bg)" />
+  <rect width="1920" height="1080" fill="url(#glowLeft)" />
+  <rect width="1920" height="1080" fill="url(#glowRight)" />
+
+  <!-- 2. Subtle Tech Grid Pattern -->
+  <g opacity="0.04" stroke="#ffffff" stroke-width="1">
+    <line x1="0" y1="120" x2="1920" y2="120" />
+    <line x1="0" y1="240" x2="1920" y2="240" />
+    <line x1="0" y1="360" x2="1920" y2="360" />
+    <line x1="0" y1="480" x2="1920" y2="480" />
+    <line x1="0" y1="600" x2="1920" y2="600" />
+    <line x1="0" y1="720" x2="1920" y2="720" />
+    <line x1="0" y1="840" x2="1920" y2="840" />
+    <line x1="0" y1="960" x2="1920" y2="960" />
+
+    <line x1="160" y1="0" x2="160" y2="1080" />
+    <line x1="320" y1="0" x2="320" y2="1080" />
+    <line x1="480" y1="0" x2="480" y2="1080" />
+    <line x1="640" y1="0" x2="640" y2="1080" />
+    <line x1="800" y1="0" x2="800" y2="1080" />
+    <line x1="960" y1="0" x2="960" y2="1080" />
+    <line x1="1120" y1="0" x2="1120" y2="1080" />
+    <line x1="1280" y1="0" x2="1280" y2="1080" />
+    <line x1="1440" y1="0" x2="1440" y2="1080" />
+    <line x1="1600" y1="0" x2="1600" y2="1080" />
+    <line x1="1760" y1="0" x2="1760" y2="1080" />
+  </g>
+
+  <!-- ======================================================== -->
+  <!-- LEFT COLUMN: BRANDING & VALUE PROPOSITION                -->
+  <!-- ======================================================== -->
+  <g transform="translate(160, 210)">
+    <!-- Pill Badge -->
+    <rect width="280" height="42" rx="21" fill="#6366f1" fill-opacity="0.12" stroke="#6366f1" stroke-opacity="0.35" stroke-width="1.5" />
+    <circle cx="24" cy="21" r="5" fill="#38bdf8" />
+    <text x="38" y="26" class="body-font" font-size="14" font-weight="700" fill="#a5b4fc" letter-spacing="1">FIGMA COMMUNITY PLUGIN</text>
+
+    <!-- Main Title -->
+    <text x="0" y="130" class="title-font" font-size="82" fill="#ffffff" letter-spacing="-2">FastPath</text>
+    
+    <!-- Lightning Icon beside title -->
+    <g transform="translate(370, 68) scale(0.68)">
+      <path d="M48 10L16 64H44L34 110L72 52H44L48 10Z" fill="url(#accentGrad)" />
+    </g>
+
+    <text x="0" y="195" class="title-font" font-size="44" fill="url(#accentGrad)" letter-spacing="-1">Prototype to Lightning-Fast HTML</text>
+
+    <!-- Subtitle description -->
+    <text x="0" y="265" class="body-font" font-size="22" fill="#94a3b8" letter-spacing="-0.3">
+      Turn Figma prototypes into standalone, offline HTML files.
+    </text>
+    <text x="0" y="302" class="body-font" font-size="22" fill="#94a3b8" letter-spacing="-0.3">
+      Zero viewer lag, 60 FPS mobile touch gestures &amp; WebP compression.
+    </text>
+
+    <!-- Feature Grid Badges -->
+    <g transform="translate(0, 360)">
+      <!-- Badge 1 -->
+      <g transform="translate(0, 0)">
+        <rect width="320" height="56" rx="14" fill="url(#cardBg)" stroke="url(#cardBorder)" stroke-width="1" />
+        <text x="20" y="35" font-size="20">⚡</text>
+        <text x="54" y="34" class="body-font" font-size="16" font-weight="700" fill="#ffffff">60 FPS Touch Gestures</text>
+      </g>
+
+      <!-- Badge 2 -->
+      <g transform="translate(340, 0)">
+        <rect width="320" height="56" rx="14" fill="url(#cardBg)" stroke="url(#cardBorder)" stroke-width="1" />
+        <text x="20" y="35" font-size="20">📦</text>
+        <text x="54" y="34" class="body-font" font-size="16" font-weight="700" fill="#ffffff">100% Offline Single File</text>
+      </g>
+
+      <!-- Badge 3 -->
+      <g transform="translate(0, 72)">
+        <rect width="320" height="56" rx="14" fill="url(#cardBg)" stroke="url(#cardBorder)" stroke-width="1" />
+        <text x="20" y="35" font-size="20">🖼️</text>
+        <text x="54" y="34" class="body-font" font-size="16" font-weight="700" fill="#ffffff">Retina WebP Compression</text>
+      </g>
+
+      <!-- Badge 4 -->
+      <g transform="translate(340, 72)">
+        <rect width="320" height="56" rx="14" fill="url(#cardBg)" stroke="url(#cardBorder)" stroke-width="1" />
+        <text x="20" y="35" font-size="20">📑</text>
+        <text x="54" y="34" class="body-font" font-size="16" font-weight="700" fill="#ffffff">Modals &amp; Bottom Sheets</text>
+      </g>
+    </g>
+
+    <!-- Footer callout -->
+    <g transform="translate(0, 545)">
+      <circle cx="10" cy="10" r="4" fill="#10b981" />
+      <text x="26" y="15" class="body-font" font-size="16" font-weight="600" fill="#6ee7b7">
+        Zero dependencies • No Figma login required for clients • Share anywhere
+      </text>
+    </g>
+  </g>
+
+  <!-- ======================================================== -->
+  <!-- RIGHT COLUMN: 3D FLOATING MOBILE DEVICE SHOWCASE         -->
+  <!-- ======================================================== -->
+  <g transform="translate(1220, 110)">
+    <!-- Ambient Device Backdrop Glow -->
+    <ellipse cx="230" cy="420" rx="260" ry="380" fill="#6366f1" fill-opacity="0.3" filter="url(#blurFilter)" />
+    <ellipse cx="230" cy="420" rx="180" ry="260" fill="#06b6d4" fill-opacity="0.25" filter="url(#blurFilter)" />
+
+    <!-- Smartphone Body (Titanium border with rounded corners) -->
+    <rect x="0" y="0" width="460" height="840" rx="64" fill="#090d16" stroke="#334155" stroke-width="6" />
+    <rect x="8" y="8" width="444" height="824" rx="56" fill="#020617" />
+
+    <!-- Dynamic Island / Speaker Notch -->
+    <rect x="165" y="24" width="130" height="32" rx="16" fill="#000000" />
+    <circle cx="270" cy="40" r="5" fill="#1e293b" />
+
+    <!-- Prototype UI Screen Content -->
+    <g transform="translate(24, 76)">
+      <!-- Status Bar -->
+      <text x="20" y="20" class="mono-font" font-size="13" font-weight="600" fill="#94a3b8">9:41</text>
+      <text x="350" y="20" class="mono-font" font-size="13" font-weight="600" fill="#94a3b8">5G 100%</text>
+
+      <!-- App Header -->
+      <g transform="translate(0, 40)">
+        <text x="20" y="28" class="title-font" font-size="26" font-weight="800" fill="#ffffff">Discover</text>
+        <circle cx="370" cy="22" r="18" fill="#1e293b" />
+        <text x="363" y="27" font-size="14" fill="#ffffff">🔍</text>
+      </g>
+
+      <!-- Hero Featured Card -->
+      <g transform="translate(10, 95)">
+        <rect width="392" height="200" rx="24" fill="url(#accentGrad)" />
+        <text x="24" y="50" class="mono-font" font-size="12" font-weight="700" fill="#ffffff" opacity="0.8">FEATURED PROTOTYPE</text>
+        <text x="24" y="90" class="title-font" font-size="28" font-weight="800" fill="#ffffff">Mobile Checkout Flow</text>
+        <text x="24" y="125" class="body-font" font-size="15" fill="#ffffff" opacity="0.9">Interactive tap &amp; swipe transitions</text>
+
+        <rect x="24" y="145" width="110" height="34" rx="17" fill="#ffffff" />
+        <text x="44" y="167" class="body-font" font-size="13" font-weight="700" fill="#0f172a">Explore ➔</text>
+      </g>
+
+      <!-- Interactive UI Card Row -->
+      <g transform="translate(10, 315)">
+        <rect x="0" y="0" width="188" height="130" rx="18" fill="#1e293b" stroke="#334155" stroke-width="1" />
+        <circle cx="36" cy="36" r="16" fill="#6366f1" fill-opacity="0.3" />
+        <text x="28" y="42" font-size="16">⚡</text>
+        <text x="20" y="80" class="title-font" font-size="16" font-weight="700" fill="#ffffff">Fast Gestures</text>
+        <text x="20" y="104" class="body-font" font-size="12" fill="#94a3b8">60 FPS hardware accel</text>
+
+        <rect x="204" y="0" width="188" height="130" rx="18" fill="#1e293b" stroke="#334155" stroke-width="1" />
+        <circle cx="240" cy="36" r="16" fill="#06b6d4" fill-opacity="0.3" />
+        <text x="232" y="42" font-size="16">📦</text>
+        <text x="224" y="80" class="title-font" font-size="16" font-weight="700" fill="#ffffff">Single File</text>
+        <text x="224" y="104" class="body-font" font-size="12" fill="#94a3b8">Zero server setup</text>
+      </g>
+
+      <!-- Bottom Sheet Modal Preview -->
+      <g transform="translate(10, 465)">
+        <rect x="0" y="0" width="392" height="175" rx="22" fill="#0b1120" stroke="#475569" stroke-width="1.5" />
+        <rect x="176" y="10" width="40" height="4" rx="2" fill="#64748b" />
+        <text x="24" y="45" class="title-font" font-size="17" font-weight="700" fill="#ffffff">Bottom Sheet Overlay</text>
+        <text x="24" y="72" class="body-font" font-size="13" fill="#94a3b8">Native Figma overlay triggers supported</text>
+
+        <!-- Button in sheet -->
+        <rect x="24" y="100" width="344" height="46" rx="12" fill="#6366f1" />
+        <text x="145" y="129" class="body-font" font-size="14" font-weight="700" fill="#ffffff">Confirm Action</text>
+      </g>
+
+      <!-- TOUCH GESTURE CURSOR & RIPPLE SIMULATION -->
+      <g transform="translate(206, 580)">
+        <!-- Expanding Gentle Tap Ripple -->
+        <circle cx="0" cy="0" r="38" fill="#38bdf8" fill-opacity="0.25" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.6" />
+        <!-- Inner Core Cursor (28px standard FastPath cursor) -->
+        <circle cx="0" cy="0" r="14" fill="#ffffff" fill-opacity="0.9" />
+        <circle cx="0" cy="0" r="6" fill="#6366f1" />
+      </g>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- FLOATING FEATURE CALLOUT BADGES (OVER DEVICE)            -->
+    <!-- ======================================================== -->
+    <!-- Left Floating Badge: 60 FPS -->
+    <g transform="translate(-80, 260)">
+      <rect width="210" height="64" rx="18" fill="#0f172a" stroke="#6366f1" stroke-width="1.5" filter="url(#cardBg)" />
+      <circle cx="36" cy="32" r="18" fill="#6366f1" fill-opacity="0.2" />
+      <text x="28" y="38" font-size="18">⚡</text>
+      <text x="64" y="28" class="title-font" font-size="15" font-weight="800" fill="#ffffff">60 FPS Motion</text>
+      <text x="64" y="47" class="body-font" font-size="12" fill="#94a3b8">Native Mobile Feel</text>
+    </g>
+
+    <!-- Right Floating Badge: WebP 80% Smaller -->
+    <g transform="translate(320, 520)">
+      <rect width="230" height="64" rx="18" fill="#0f172a" stroke="#06b6d4" stroke-width="1.5" />
+      <circle cx="36" cy="32" r="18" fill="#06b6d4" fill-opacity="0.2" />
+      <text x="27" y="38" font-size="18">🖼️</text>
+      <text x="64" y="28" class="title-font" font-size="15" font-weight="800" fill="#ffffff">80% Smaller</text>
+      <text x="64" y="47" class="body-font" font-size="12" fill="#38bdf8">Smart WebP Encoding</text>
+    </g>
+  </g>
+</svg>

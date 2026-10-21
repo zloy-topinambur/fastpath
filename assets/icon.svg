@@ -1,0 +1,74 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#090d16" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <!-- Outer Border Glow -->
+    <linearGradient id="borderGrad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#06b6d4" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.6" />
+    </linearGradient>
+
+    <!-- Lightning Primary Gradient -->
+    <linearGradient id="boltGrad" x1="160" y1="80" x2="350" y2="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="35%" stop-color="#06b6d4" />
+      <stop offset="70%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+
+    <!-- Inner Glow Gradient -->
+    <linearGradient id="highlightGrad" x1="200" y1="100" x2="280" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#a5f3fc" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Radial Ambient Glow -->
+    <radialGradient id="ambientGlow" cx="50%" cy="45%" r="45%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.35" />
+      <stop offset="60%" stop-color="#06b6d4" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Shadow Filter -->
+    <filter id="glowFilter" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="24" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Container (Apple / Figma standard squircle radius 112) -->
+  <rect width="512" height="512" rx="116" fill="url(#bgGrad)" />
+  <rect width="512" height="512" rx="116" fill="url(#ambientGlow)" />
+  <rect x="3" y="3" width="506" height="506" rx="113" stroke="url(#borderGrad)" stroke-width="3" stroke-opacity="0.7" />
+
+  <!-- Speed lines in background -->
+  <path d="M120 200L180 200" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-opacity="0.25" />
+  <path d="M90 256L170 256" stroke="#06b6d4" stroke-width="5" stroke-linecap="round" stroke-opacity="0.3" />
+  <path d="M110 312L175 312" stroke="#6366f1" stroke-width="4" stroke-linecap="round" stroke-opacity="0.25" />
+
+  <path d="M340 200L400 200" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round" stroke-opacity="0.2" />
+  <path d="M345 256L425 256" stroke="#6366f1" stroke-width="5" stroke-linecap="round" stroke-opacity="0.3" />
+  <path d="M335 312L395 312" stroke="#06b6d4" stroke-width="4" stroke-linecap="round" stroke-opacity="0.2" />
+
+  <!-- Lightning Bolt Shadow for 3D depth -->
+  <path d="M285 70L155 260H265L227 442L357 252H247L285 70Z" fill="#000" opacity="0.4" transform="translate(4, 12)" filter="url(#glowFilter)" />
+
+  <!-- Ambient Glow Behind Bolt -->
+  <path d="M285 70L155 260H265L227 442L357 252H247L285 70Z" fill="url(#boltGrad)" filter="url(#glowFilter)" opacity="0.75" />
+
+  <!-- Main Crisp Lightning Bolt -->
+  <path d="M285 70L155 260H265L227 442L357 252H247L285 70Z" fill="url(#boltGrad)" />
+
+  <!-- Beveled Inner Facet for Premium 3D Appearance -->
+  <path d="M285 70L155 260H265L227 442L255 270H285L285 70Z" fill="url(#highlightGrad)" opacity="0.5" />
+
+  <!-- Bottom Tip Highlight -->
+  <circle cx="227" cy="442" r="5" fill="#38bdf8" filter="url(#glowFilter)" />
+</svg>
