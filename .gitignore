@@ -1,6 +1,14 @@
-node_modules/
+# Plugin Source Code & Keys (Keep strictly local)
+code.js
+code.ts
+manifest.json
+ui.html
+scripts/
 keys_*.txt
 *.key
-.DS_Store
+
+# Build and temp
+node_modules/
 dist/
 tmp/
+.DS_Store
